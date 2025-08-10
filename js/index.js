@@ -1,13 +1,13 @@
 "use strict"
 //==========================================
 
- import { 
+import {
     getTasksLocalStorage,
     setTasksLocalStorage,
     generateUniqueId,
-//     initSortableList,
+    //     initSortableList,
     updateListTasks
- } from "./utils.js";
+} from "./utils.js";
 
 const form = document.querySelector('.form');
 const textareaForm = document.querySelector('.form__textarea');
@@ -21,17 +21,17 @@ updateListTasks();
 
 // All eventListener
 form.addEventListener('submit', sendTask);
-output.addEventListener('click', (event)=>{
+output.addEventListener('click', (event) => {
     const taskElement = event.target.closest('.task__btns');
-    if(!taskElement) return;
+    if (!taskElement) return;
 
-    if(event.target.closest('.task__pinned')){
+    if (event.target.closest('.task__pinned')) {
         pinnedTask(event);
-    } else if (event.target.closest('.task__edit')){
+    } else if (event.target.closest('.task__edit')) {
         editTask(event);
-    }  else if (event.target.closest('.task__del')){
+    } else if (event.target.closest('.task__del')) {
         delTask(event);
-    }  else if (event.target.closest('.task__done')){
+    } else if (event.target.closest('.task__done')) {
         doneTask(event);
     }
 });
@@ -39,16 +39,16 @@ output.addEventListener('click', (event)=>{
 
 
 // All function
-function sendTask(event){
+function sendTask(event) {
     event.preventDefault();
     const task = textareaForm.value.trim().replace(/\s+/g, ' ')
-    if(!task){
+    if (!task) {
         return alert('Поле не може бути пустим');
     }
 
-// ------------- isEditTask
+    // ------------- isEditTask
 
-const arrayTasksLS = getTasksLocalStorage();
+    const arrayTasksLS = getTasksLocalStorage();
     arrayTasksLS.push({
         id: generateUniqueId(),
         task,
@@ -66,23 +66,23 @@ const arrayTasksLS = getTasksLocalStorage();
 }
 
 
-function doneTask(event){
+function doneTask(event) {
     const task = event.target.closest('.task')
     const id = Number(task.dataset.taskId);
 
     const arrayTasksLS = getTasksLocalStorage();
     //findIndex() повертає або індекс елемента у масиві, або  -1
-    const index = arrayTasksLS.findIndex(task => task.td === id);
+    const index = arrayTasksLS.findIndex(task => task.id === id);
 
-    if(index === -1){
+    if (index === -1) {
         return alert('Таке завдання не знайдено');
     }
 
-    if(!arrayTasksLS[index].done && arrayTasksLS[index].pinned){
+    if (!arrayTasksLS[index].done && arrayTasksLS[index].pinned) {
         arrayTasksLS[index].pinned = false;
     }
 
-    if(arrayTasksLS[index].done){
+    if (arrayTasksLS[index].done) {
         arrayTasksLS[index].done = false;
     } else {
         arrayTasksLS[index].done = true;
@@ -90,6 +90,59 @@ function doneTask(event){
 
     setTasksLocalStorage(arrayTasksLS);
     updateListTasks();
+}
 
+function pinnedTask(event) {
+    const task = event.target.closest('.task')
+    const id = Number(task.dataset.taskId);
 
+    const arrayTasksLS = getTasksLocalStorage();
+    const index = arrayTasksLS.findIndex(task => task.id === id);
+
+    if (index === -1) {
+        return alert('Таке завдання не знайдено');
+    }
+
+    if (!arrayTasksLS[index].pinned && arrayTasksLS[index].done) {
+        return alert('Щоб закріпити завдання спочатку зніміть відмітку про виконання');
+    }
+
+    if (arrayTasksLS[index].pinned) {
+        arrayTasksLS[index].pinned = false;
+    } else {
+        arrayTasksLS[index].pinned = true;
+    }
+
+    setTasksLocalStorage(arrayTasksLS);
+    updateListTasks();
+}
+
+function delTask(event){
+    const task = event.target.closest('.task')
+    const id = Number(task.dataset.taskId);
+
+    const arrayTasksLS = getTasksLocalStorage();
+    const newTaskArr = arrayTasksLS.filter(task => task.id !== id);
+    setTasksLocalStorage(newTaskArr);
+    updateListTasks();
+
+}
+
+function editTask(event){
+    const task = event.target.closest('.task')
+    const id = Number(task.dataset.taskId);
+
+    const arrayTasksLS = getTasksLocalStorage();
+    const index = arrayTasksLS.findIndex(task => task.id === id);
+
+    const currentTask = arrayTasksLS[index];
+
+    if (index === -1) {
+        return alert('Таке завдання не знайдено');
+    }
+
+    console.log(`У цьому обробнику буде відбуватись зміна ${currentTask.task}`);
+    
+    // setTasksLocalStorage(newTaskArr);
+    updateListTasks();
 }
