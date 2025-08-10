@@ -1,5 +1,31 @@
 import { doneSvg, pinnedSvg, delSvg, editSvg } from "./svg.js";
 
+export function getTasksLocalStorage() {
+    const tasksJSON = localStorage.getItem('tasks');
+    return tasksJSON ? JSON.parse(tasksJSON) : [];
+}
+
+export function setTasksLocalStorage(tasks) {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+}
+
+export function generateUniqueId(){
+    const timestamp = Date.now();
+    const randomPart = Math.floor(Math.random() * 10000);
+    const randomPartTwo = Math.floor(Math.random() * 10000);
+    return timestamp + randomPart + randomPartTwo;
+
+}
+
+
+export function updateListTasks(){
+    document.querySelector('.output').textContent= '';
+    const arrayTasksLS = getTasksLocalStorage();
+    renderTasks(arrayTasksLS);
+}
+
+
+
 function renderTasks(tasks) {
     if (!tasks || !tasks.length) return;
 
@@ -12,10 +38,10 @@ function renderTasks(tasks) {
         }
         return a.position - b.position;
     })
-    .forEach((value, i) => {
-        const { id, task, pinned, done } = value;
-        const item = 
-            `
+        .forEach((value, i) => {
+            const { id, task, pinned, done } = value;
+            const item =
+                `
             <div class="task ${done ? 'done' : ''} ${pinned ? 'pinned' : ''}" data-task-id="${id}" draggable="true">
                 <p class="task__text">${task}</p>
                 <span class="task__index ${done ? 'none' : ''}">${i + 1}</span>
@@ -27,9 +53,10 @@ function renderTasks(tasks) {
                 </div>
             </div>
             `
-        document.querySelector('.output').insertAdjacentHTML('beforeend', item)
-    });
+            document.querySelector('.output').insertAdjacentHTML('beforeend', item)
+        });
 
-    activationDrag();
+    // activationDrag(); 
 }
+
 
