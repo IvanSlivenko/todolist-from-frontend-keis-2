@@ -21,6 +21,11 @@ updateListTasks();
 
 // All eventListener
 form.addEventListener('submit', sendTask);
+buttonCancel.addEventListener('click', resetSendForm);
+// output.addEventListener('dragover', initSortableList);
+// output.addEventListener('dragenter', event=> event.preventDefault());
+
+
 output.addEventListener('click', (event) => {
     const taskElement = event.target.closest('.task__btns');
     if (!taskElement) return;
@@ -47,6 +52,10 @@ function sendTask(event) {
     }
 
     // ------------- isEditTask
+    if(isEditTask){
+        saveEditedTask(task);
+        return;
+    }
 
     const arrayTasksLS = getTasksLocalStorage();
     arrayTasksLS.push({
@@ -129,20 +138,35 @@ function delTask(event){
 }
 
 function editTask(event){
-    const task = event.target.closest('.task')
-    const id = Number(task.dataset.taskId);
+    const task = event.target.closest('.task');
+    const text = task.querySelector('.task__text');
+    editId = Number(task.dataset.taskId);
 
+    textareaForm.value = text.textContent;
+    isEditTask = true;
+    buttonSendForm.textContent = "Зберегти"
+    buttonCancel.classList.remove('none');
+    form.scrollIntoView({ behavior: 'smooth'}); // прокрутка догори
+}
+
+function saveEditedTask(task){
     const arrayTasksLS = getTasksLocalStorage();
-    const index = arrayTasksLS.findIndex(task => task.id === id);
+    const editedTaskIndex = arrayTasksLS.findIndex(task => task.id === editId);
 
-    const currentTask = arrayTasksLS[index];
-
-    if (index === -1) {
-        return alert('Таке завдання не знайдено');
+    if(editedTaskIndex !== -1){
+        arrayTasksLS[editedTaskIndex].task = task;
+        setTasksLocalStorage(arrayTasksLS);
+        updateListTasks();
+    } else {
+        alert("Таке завдання не знайдено")
     }
+    resetSendForm();
+}
 
-    console.log(`У цьому обробнику буде відбуватись зміна ${currentTask.task}`);
-    
-    // setTasksLocalStorage(newTaskArr);
-    updateListTasks();
+function resetSendForm(){
+    editId = null;
+    isEditTask = false;
+    buttonCancel.classList.add('none');
+    buttonSendForm.textContent = 'Додати';
+    form.reset();
 }
