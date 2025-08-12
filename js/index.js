@@ -5,7 +5,7 @@ import {
     getTasksLocalStorage,
     setTasksLocalStorage,
     generateUniqueId,
-    //     initSortableList,
+    initSortableList,
     updateListTasks
 } from "./utils.js";
 
@@ -22,8 +22,8 @@ updateListTasks();
 // All eventListener
 form.addEventListener('submit', sendTask);
 buttonCancel.addEventListener('click', resetSendForm);
-// output.addEventListener('dragover', initSortableList);
-// output.addEventListener('dragenter', event=> event.preventDefault());
+output.addEventListener('dragover', initSortableList);
+output.addEventListener('dragenter', event=> event.preventDefault());
 
 
 output.addEventListener('click', (event) => {
@@ -63,7 +63,7 @@ function sendTask(event) {
         task,
         done: false,
         pinned: false,
-        position: 1000
+        position: arrayTasksLS.lenght
     })
 
     setTasksLocalStorage(arrayTasksLS)
@@ -170,3 +170,4 @@ function resetSendForm(){
     buttonSendForm.textContent = 'Додати';
     form.reset();
 }
+

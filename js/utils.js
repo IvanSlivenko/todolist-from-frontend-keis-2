@@ -89,11 +89,12 @@ function savePositionTask(){
     updateListTasks();
 }
 
-function initSortadleList(event){
+export function initSortableList(event){
     event.preventDefault();
+
     const output = document.querySelector('.output');
     const draggingItem = document.querySelector('.dragging');
-    let siblings = [...document.querySelectorAll('task:not(.dragging)')];
+    let siblings = [...document.querySelectorAll('.task:not(.dragging)')];
 
     let nextsibling = siblings.find(sibling => {
         return event.clientY <= sibling.offsetTop + sibling.offsetHeight / 2;
